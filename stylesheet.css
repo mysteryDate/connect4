@@ -40,7 +40,17 @@ p {
 	text-align: center;
 	font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	line-height: 5em;
+	/*display: none;*/
+}
+
+h1 {
 	display: none;
+	position: relative;
+	left: -1000px;
+}
+
+#footer {
+	font-family: Georgia;
 }
 
 .empty {
@@ -53,7 +63,7 @@ p {
 }
 
 .player2 {
-	color: #C1C716;
-	background-color: #C1C716;
+	color: #000000;
+	background-color: #000000;
 	/*Can always try black*/
 }
