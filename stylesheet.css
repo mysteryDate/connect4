@@ -1,0 +1,59 @@
+body {
+	background-color: #1F3233;
+	/* previously 1F3233 */
+}
+
+#board {
+	padding: 2em;
+	background-color: #65F0F7;
+	/* previously 65F0F7*/
+	margin: 0px auto;
+	border-radius: 3em;
+	display: none;
+}
+
+.column {
+	display: inline-block;
+	margin: 0 0.5em;
+}
+
+.space {
+	height: 5em;
+	width: 5em;
+	border-radius: 100%;
+	background-color: #1F3233;
+	/* Needs to be same color as body */
+	margin: 1em 0;
+	opacity: 0;
+}
+
+.header {
+	margin: 0 auto;
+}
+
+header {
+	font-family: Georgia;
+	color: #FFFFFF;
+}
+
+p {
+	text-align: center;
+	font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	line-height: 5em;
+	display: none;
+}
+
+.empty {
+	color: white;
+}
+
+.player1 {
+	color: #D91C1C;
+	background-color: #D91C1C;
+}
+
+.player2 {
+	color: #C1C716;
+	background-color: #C1C716;
+	/*Can always try black*/
+}
