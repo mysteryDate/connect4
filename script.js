@@ -45,8 +45,8 @@ $(document).ready( function() {
 	$('#board').slideDown(1000,'swing');
 
     //Fade the hovered over column
-	$('.column').hover(
-		function() { //mouseenter handler
+	$('#board').on('hover', '.column', function(e) {
+		if( e.type == 'mouseenter') { //mouseenter handler
             if(!end) {
                 $(this).children('.empty').each( function (i) {
                     if( i == (board.columnEmpty[$(this).parent().attr('id')] - 1) ) 
@@ -54,13 +54,13 @@ $(document).ready( function() {
                     else $(this).stop(true).delay(50*i).fadeTo(200, 0.7);
                 });
             }
-        }, 
-        function () {  //mouseleave handler
+        }
+        else {  //mouseleave handler
             $(this).children('.empty').each( function () {
                 $(this).stop(true).fadeTo(500, 1);
             });
         }
-    );
+    });
 
     $('.sizingButton').hover(
         function() {
@@ -82,7 +82,7 @@ $(document).ready( function() {
     //Whose turn is it? 1 = player 1, -1 = player 2.
     var whoseTurn = 1; 
 
-    $('.column').click( function() {
+    $('#board').on('click', '.column', function() {
 
         if(!end) {
     
@@ -107,6 +107,7 @@ $(document).ready( function() {
         		turn++;								//Update the turn counter
 
                 if (turn == numCol*numRow) {
+                    $('title').text("Cat's Game!");
                     end = true;
                     restartButton(columnNumber, bottom, 1000);
                 }
@@ -124,9 +125,13 @@ function reSize(board, direction) {
         case 'moreColumns':
             numCol++; break;
         case 'lessRows':
-            numRow--; break;
+            if(numRow > 1) {
+            numRow--; break; }
+            else return false;
         case 'lessColumns':
-            numCol--; break;
+            if(numCol > 1) {
+            numCol--; break; }
+            else return false;
     }
     
     if(direction == 'moreRows' || direction == 'lessRows') {
@@ -177,24 +182,6 @@ function reSize(board, direction) {
             board.columnEmpty[numCol] = undefined;
         }
     }
-    /*  for (var i = 0; i < numCol; i++) {
-
-        $('#board').append('<div class="column" id="'+i+'"></div>')
-        board.value[i] = [];
-        board.$name[i] = [];
-        board.columnEmpty[i] = numRow;
-
-        for (var j = 0; j < numRow; j++) {
-            $('.column:nth-child('+(i+1)+')').append('<div class="space empty"></div>');
-            board.value[i][j] = 'empty';
-            board.$name[i][j] = $('.column:nth-child('+(i+1)+') .space:nth-child('+(j+1)+')');
-
-            board.$name[i][j].append('<p></p>');
-
-            board.$name[i][j].delay(100*(i/(j+1))).fadeTo(1000, 1);
-        }
-    }*/
-
     numberSpaces(board);
     $('.controls').animate({right: (-6-3*numCol)+'em'});
 }
@@ -374,4 +361,3 @@ function numberSpaces(board) {
         }
     }
 };
-
