@@ -1,13 +1,15 @@
 var numRow = 6;
 var numCol = 7;
 var end = false;    //Is the game over?
+var turn = 0;   //A turn counter
+var record = [0, 0];    //Record each players wins
 
 $(document).ready( function() {
 	
     //Make the playing board the right size
-	$('#board').css("height", 6*numRow+'em')
+	$('#board, body').css("height", 6*numRow+'em')
 	$('#board').css("width", 6*numCol+'em')
-    $('.header').css("width", 6*numCol+'em')
+    //$('body').css('height', 6*numRow+'em')
 
     //Constructor for our board
 	board = {
@@ -29,27 +31,18 @@ $(document).ready( function() {
 			board.value[i][j] = 'empty';
 			board.$name[i][j] = $('.column:nth-child('+(i+1)+') .space:nth-child('+(j+1)+')');
 
-            var value = (numCol*j) + i + 1;   //Total number of spaces so far
-            var text = value;
-
-            if (value % 3 == 0) {
-                if (value % 5 == 0) {
-                    text = 'fizzbuzz';
-                }
-                else text = 'fizz';
-            }
-            else if (value % 5 == 0) {
-                text = 'buzz';
-            }
-            board.$name[i][j].append('<p>'+text+'</p>');
+            board.$name[i][j].append('<p></p>');
 
 			board.$name[i][j].delay(100*(i/(j+1))).fadeTo(1000, 1);
 		}
 	}
+    numberSpaces(board);
 
-    //Animate the board and title
+    //Put control and score where they need to be
+    $('.controls').css({right: (-6-3*numCol)+'em'});
+
+    //Animate the board
 	$('#board').slideDown(1000,'swing');
-    $('h1').animate( { left: 0 },1000 );
 
     //Fade the hovered over column
 	$('.column').hover(
@@ -69,9 +62,25 @@ $(document).ready( function() {
         }
     );
 
+    $('.sizingButton').hover(
+        function() {
+            $(this).animate({fontSize: '2em'}, 200).css('color', 'yellow');
+        },
+        function() {
+            $(this).animate({fontSize: '1em'}, 200).css('color', 'white');
+        }
+    );
+
+    $('.sizingButton').click( function() {
+        restart(board)
+        var type = $(this).attr('id');
+        reSize(board, type);
+    });
+
+    $('.column, .sizingButton').css('cursor', 'pointer');
+
     //Whose turn is it? 1 = player 1, -1 = player 2.
-    var whoseTurn = 1;	
-    var turn = 0;	
+    var whoseTurn = 1; 
 
     $('.column').click( function() {
 
@@ -83,8 +92,9 @@ $(document).ready( function() {
         		var bottom = board.columnEmpty[columnNumber] - 1;		//The lowest available spot on that column
         		//Assign that space to the appropriate player
         		board.$name[columnNumber][bottom].stop().addClass('player'+(-0.5*whoseTurn+1.5)).removeClass('empty').css('opacity', '1');
-                //Fade the space above
-                board.$name[columnNumber][bottom-1].stop().fadeTo(200, 0.2);
+                //Fade the space above if it still exists
+                if(bottom > 0) 
+                    board.$name[columnNumber][bottom-1].stop().fadeTo(200, 0.2);
         		board.value[columnNumber][bottom] = whoseTurn;
     
         		board.columnEmpty[columnNumber]--;	//Remembers how full that column is
@@ -95,10 +105,99 @@ $(document).ready( function() {
                 
         		whoseTurn *= -1;					//Change whose turn it is
         		turn++;								//Update the turn counter
+
+                if (turn == numCol*numRow) {
+                    end = true;
+                    restartButton(columnNumber, bottom, 1000);
+                }
         	}
         }
     });
 }); 
+
+//Resize the board
+function reSize(board, direction) {
+    
+    switch(direction) {
+        case 'moreRows':
+            numRow++; break;
+        case 'moreColumns':
+            numCol++; break;
+        case 'lessRows':
+            numRow--; break;
+        case 'lessColumns':
+            numCol--; break;
+    }
+    
+    if(direction == 'moreRows' || direction == 'lessRows') {
+        $('#board, body').animate({height: (6*numRow)+'em'}, 300);
+        if(direction == 'moreRows') {
+            for (var i = 0; i < numCol; i++) {
+                $('#'+i).append('<div class="space empty"></div>');
+                board.columnEmpty[i] = numRow;
+                board.value[i][numRow-1] = 'empty';
+                board.$name[i][numRow-1] = $('.column:nth-child('+(i+1)+') .space:nth-child('+numRow+')');
+                board.$name[i][numRow-1].append('<p></p>');
+                board.$name[i][numRow-1].delay(50*i).fadeTo(1000, 1);
+            }
+        }
+        else {
+            $('.space:last-child').remove();
+            for (var i = 0; i < numCol; i++) {
+                board.value[i][numRow] = undefined;
+                board.$name[i][numRow] = undefined;
+                board.columnEmpty[i] = numRow;
+            }
+        }
+    }
+    else {
+        $('#board').animate({width: (6*numCol)+'em'}, 300);
+        if(direction == 'moreColumns') {
+            $('#board').append('<div class="column" id="'+(numCol-1)+'"></div>')
+            board.value[numCol-1] = [];
+            board.$name[numCol-1] = [];
+            board.columnEmpty[numCol-1] = numRow;
+
+            for (var j = 0; j < numRow; j++) {
+                $('.column:nth-child('+numCol+')').append('<div class="space empty"></div>');
+                board.value[(numCol-1)][j] = 'empty';
+                board.$name[(numCol-1)][j] = $('.column:nth-child('+numCol+') .space:nth-child('+(j+1)+')');
+    
+                board.$name[(numCol-1)][j].append('<p></p>');
+    
+                board.$name[(numCol-1)][j].delay(100*((numCol-1)/(j+1))).fadeTo(1000, 1);
+            }
+
+            $('.column').css('cursor', 'pointer');
+        }
+        else {
+            $('#'+numCol).remove();
+            board.value[numCol] = undefined;
+            board.$name[numCol] = undefined;
+            board.columnEmpty[numCol] = undefined;
+        }
+    }
+    /*  for (var i = 0; i < numCol; i++) {
+
+        $('#board').append('<div class="column" id="'+i+'"></div>')
+        board.value[i] = [];
+        board.$name[i] = [];
+        board.columnEmpty[i] = numRow;
+
+        for (var j = 0; j < numRow; j++) {
+            $('.column:nth-child('+(i+1)+')').append('<div class="space empty"></div>');
+            board.value[i][j] = 'empty';
+            board.$name[i][j] = $('.column:nth-child('+(i+1)+') .space:nth-child('+(j+1)+')');
+
+            board.$name[i][j].append('<p></p>');
+
+            board.$name[i][j].delay(100*(i/(j+1))).fadeTo(1000, 1);
+        }
+    }*/
+
+    numberSpaces(board);
+    $('.controls').animate({right: (-6-3*numCol)+'em'});
+}
 
 //Has anyone won the game?
 function checkVictory(board, whoseTurn, row, col) {
@@ -179,6 +278,7 @@ function checkVictory(board, whoseTurn, row, col) {
     return false;
 };
 
+//Announce a winner
 function endAnimation(board) {
 
     $('.space').fadeTo(200, 1);
@@ -191,26 +291,31 @@ function endAnimation(board) {
         //console.log(i+' = '+end[i]);
     }
 
-    $('h1').animate({ left: -1000}, 200, function() {
-        if(board.$name[end[0][0]][end[0][1]].hasClass('player1')) {
-            $('title').text("Player 1 Wins!");
-            $('h1').text("Player 1 Wins!");
-        }
-        else {$('h1').text("Player 2 Wins!"); $('title').text("Player 2 Wins!");}
-    });
-    $('h1').animate({ left: 0}, 200);
+    if(board.$name[end[0][0]][end[0][1]].hasClass('player1')) {
+        $('title').text("Player 1 Wins!");
+        record[0]++;
+    }
+    else {
+        $('title').text("Player 2 Wins!");
+        record[1]++;
+    }
 
     var x = Math.floor(Math.random()*end.length);
+
+    restartButton(end[x][0], end[x][1], 3000);
+};
+
+//Creates a restart button
+function restartButton(col, row, delay) {
     window.setTimeout(function() {
-        board.$name[end[x][0]][end[x][1]].fadeTo(500, 0, function () {
+        board.$name[col][row].fadeTo(500, 0, function () {
             $(this).css('background-color', 'white').fadeTo(500, 1);
             oldText = $(this).children().text();
-            console.log(oldText);
             $(this).children().text("Play again?");
         });
-    }, 3000);
+    }, delay);
 
-    board.$name[end[x][0]][end[x][1]].hover( 
+    board.$name[col][row].hover( 
         function() {
             $(this).fadeTo(500, 0.5);
         },
@@ -220,13 +325,14 @@ function endAnimation(board) {
     );
 
     
-    board.$name[end[x][0]][end[x][1]].click( function() {
+    board.$name[col][row].click( function() {
         restart(board);
         $(this).off('click').off('hover');
         $(this).children().text(oldText);
     });
 };
 
+//Reset the game
 function restart(board) {
 
     for (var i = 0; i < numCol; i++) {
@@ -240,8 +346,32 @@ function restart(board) {
         }
     }
 
-    $('title').text('Connect 4!');
+    $('title').text('FizzBuzz!');
+    turn = 0;
 
     window.setTimeout(function() {end = false;},1000);
-    
 };
+
+//Numbers all spaces
+function numberSpaces(board) {
+    for (var i = 0; i < numCol; i++) {
+
+        for (var j = 0; j < numRow; j++) {
+
+            var value = (numCol*j) + i + 1;   //Total number of spaces so far
+            var text = value;
+
+            if (value % 3 == 0) {
+                if (value % 5 == 0) {
+                    text = 'fizzbuzz';
+                }
+                else text = 'fizz';
+            }
+            else if (value % 5 == 0) {
+                text = 'buzz';
+            }
+            board.$name[i][j].children().text(text);
+        }
+    }
+};
+

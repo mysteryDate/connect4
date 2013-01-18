@@ -2,22 +2,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<div class = "header">
-		<header>
-			<h1>CONNECT 4!</h1>
-		</header>
-	</div>
 	<link rel="stylesheet" href="stylesheet.css" />
 	
 	<!-- import jQuery -->
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<!-- import jQuery UI 
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>-->
 	<script src='script.js'></script>
-	<title>Connect 4!</title>
+	<title>FizzBuzz!</title>
 </head>
 <body>
+
+	<div class="scores">
+	</div>
+
 	<!-- the main board -->
 	<div id="board">
 	</div>
-	<div id="footer"></div>
+
+	<div class="controls">
+		<table>
+			<tr>
+				<td class='sizingButton' id='moreRows'>+</td>
+				<td class='sizingButton' id='moreColumns'>+</td>
+			</tr>
+			<tr>
+				<td>Rows</td>
+				<td>Columns</td>
+			</tr>
+			<tr>
+				<td class='sizingButton' id='lessRows'>-</td>
+				<td class='sizingButton' id='lessColumns'>-</td>
+			</tr>
+		</table>
+	</div>
+
 </body>
 </html>

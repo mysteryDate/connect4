@@ -27,15 +27,6 @@ body {
 	opacity: 0;
 }
 
-.header {
-	margin: 0 auto;
-}
-
-header {
-	font-family: Georgia;
-	color: #FFFFFF;
-}
-
 p {
 	text-align: center;
 	font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -43,18 +34,12 @@ p {
 	/*display: none;*/
 }
 
-h1 {
-	display: none;
-	position: relative;
-	left: -1000px;
-}
-
 #footer {
 	font-family: Georgia;
 }
 
 .empty {
-	color: white;
+	color: #FFFFFF;
 }
 
 .player1 {
@@ -66,4 +51,19 @@ h1 {
 	color: #000000;
 	background-color: #000000;
 	/*Can always try black*/
+}
+
+td {
+	text-align: center;
+	font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	color: #FFFFFF;
+	padding: 0.2em 0.5em;
+}
+
+.controls {
+	position: relative;
+	width: 6em;
+	margin: auto;
+	top: -7em;
+
 }
